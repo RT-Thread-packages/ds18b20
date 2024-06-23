@@ -10,7 +10,7 @@
  */
 
 #include "sensor_dallas_ds18b20.h"
-#include "sensor.h"
+#include "drivers/sensor.h"
 #include "board.h"
 #include <rtdbg.h>
 
@@ -20,7 +20,11 @@
 #define SENSOR_TEMP_RANGE_MAX (125)
 #define SENSOR_TEMP_RANGE_MIN (-55)
 
+#if RT_VER_NUM < 0x50000
 RT_WEAK void rt_hw_us_delay(rt_uint32_t us)
+#else
+rt_weak void rt_hw_us_delay(rt_uint32_t us)
+#endif
 {
     rt_uint32_t delta;
 

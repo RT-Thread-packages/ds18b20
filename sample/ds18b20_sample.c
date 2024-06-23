@@ -12,7 +12,7 @@
 #include <stdlib.h>
 #include <rtthread.h>
 #include "board.h"
-#include "sensor.h"
+#include "drivers/sensor.h"
 #include "sensor_dallas_ds18b20.h"
 
 /* Modify this pin according to the actual wiring situation */

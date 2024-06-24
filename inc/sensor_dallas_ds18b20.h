@@ -15,11 +15,6 @@
 #include <rthw.h>
 #include <rtthread.h>
 #include <rtdevice.h>
-#include "drivers/sensor.h"
-
-#if RT_VER_NUM < 0x50000
-#include <stdint.h>
-#endif
 
 #define CONNECT_SUCCESS  0
 #define CONNECT_FAILED   1

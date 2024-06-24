@@ -10,7 +10,7 @@
  */
 
 #include "sensor_dallas_ds18b20.h"
-#include "drivers/sensor.h"
+#include "rtdevice.h"
 #include "board.h"
 #include <rtdbg.h>
 
@@ -20,11 +20,7 @@
 #define SENSOR_TEMP_RANGE_MAX (125)
 #define SENSOR_TEMP_RANGE_MIN (-55)
 
-#if RT_VER_NUM < 0x50000
-RT_WEAK void rt_hw_us_delay(rt_uint32_t us)
-#else
 rt_weak void rt_hw_us_delay(rt_uint32_t us)
-#endif
 {
     rt_uint32_t delta;
 
@@ -187,20 +183,20 @@ int32_t ds18b20_get_temperature(rt_base_t pin)
 static rt_size_t _ds18b20_polling_get_data(rt_sensor_t sensor, struct rt_sensor_data *data)
 {
     rt_int32_t temperature_x10;
-    if (sensor->info.type == RT_SENSOR_CLASS_TEMP)
+    if (sensor->info.type == RT_SENSOR_TYPE_TEMP)
     {
-        temperature_x10 = ds18b20_get_temperature((rt_base_t)sensor->config.intf.user_data);
+        temperature_x10 = ds18b20_get_temperature((rt_base_t)sensor->config.intf.arg);
         data->data.temp = temperature_x10;
         data->timestamp = rt_sensor_get_ts();
     }    
     return 1;
 }
 
-static rt_size_t ds18b20_fetch_data(struct rt_sensor_device *sensor, void *buf, rt_size_t len)
+static rt_ssize_t ds18b20_fetch_data(rt_sensor_t sensor, rt_sensor_data_t buf, rt_size_t len)
 {
     RT_ASSERT(buf);
 
-    if (sensor->config.mode == RT_SENSOR_MODE_POLLING)
+    if (sensor->info.mode == RT_SENSOR_MODE_FETCH_POLLING)
     {
         return _ds18b20_polling_get_data(sensor, buf);
     }
@@ -226,21 +222,21 @@ int rt_hw_ds18b20_init(const char *name, struct rt_sensor_config *cfg)
     rt_int8_t result;
     rt_sensor_t sensor_temp = RT_NULL; 
     
-    if (!ds18b20_init((rt_base_t)cfg->intf.user_data))
+    if (!ds18b20_init((rt_base_t)cfg->intf.arg))
     {
         /* temperature sensor register */
         sensor_temp = rt_calloc(1, sizeof(struct rt_sensor_device));
         if (sensor_temp == RT_NULL)
             return -1;
 
-        sensor_temp->info.type       = RT_SENSOR_CLASS_TEMP;
+        sensor_temp->info.type       = RT_SENSOR_TYPE_TEMP;
         sensor_temp->info.vendor     = RT_SENSOR_VENDOR_DALLAS;
-        sensor_temp->info.model      = "ds18b20";
-        sensor_temp->info.unit       = RT_SENSOR_UNIT_DCELSIUS;
+        sensor_temp->info.name      = "ds18b20";
+        sensor_temp->info.unit       = RT_SENSOR_UNIT_CELSIUS;
         sensor_temp->info.intf_type  = RT_SENSOR_INTF_ONEWIRE;
-        sensor_temp->info.range_max  = SENSOR_TEMP_RANGE_MAX;
-        sensor_temp->info.range_min  = SENSOR_TEMP_RANGE_MIN;
-        sensor_temp->info.period_min = 5;
+        sensor_temp->info.scale.range_max  = SENSOR_TEMP_RANGE_MAX;
+        sensor_temp->info.scale.range_min  = SENSOR_TEMP_RANGE_MIN;
+        sensor_temp->info.acquire_min = 5;
 
         rt_memcpy(&sensor_temp->config, cfg, sizeof(struct rt_sensor_config));
         sensor_temp->ops = &sensor_ops;

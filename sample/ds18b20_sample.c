@@ -12,7 +12,8 @@
 #include <stdlib.h>
 #include <rtthread.h>
 #include "board.h"
-#include "drivers/sensor.h"
+#include "rtdevice.h"
+#include "drv_gpio.h"
 #include "sensor_dallas_ds18b20.h"
 
 /* Modify this pin according to the actual wiring situation */
@@ -36,7 +37,7 @@ static void read_temp_entry(void *parameter)
         rt_kprintf("open device failed!\n");
         return;
     }
-    rt_device_control(dev, RT_SENSOR_CTRL_SET_ODR, (void *)100);
+    rt_device_control(dev, RT_SENSOR_CTRL_GET_ID, (void *)100); //always return RT_EOK
 
     while (1)
     {
@@ -51,16 +52,14 @@ static void read_temp_entry(void *parameter)
         {
             if (sensor_data.data.temp >= 0)
             {
-                rt_kprintf("temp:%3d.%dC, timestamp:%5d\n",
-                           sensor_data.data.temp / 10,
-                           sensor_data.data.temp % 10,
+                rt_kprintf("temp:%.2fC, timestamp:%5d\n",
+                           sensor_data.data.temp / 10.0,
                            sensor_data.timestamp);
             }
             else
             {
-                rt_kprintf("temp:-%2d.%dC, timestamp:%5d\n",
-                           abs(sensor_data.data.temp / 10),
-                           abs(sensor_data.data.temp % 10),
+                rt_kprintf("temp:-%.2fC, timestamp:%5d\n",
+                           abs(sensor_data.data.temp / 10.0),
                            sensor_data.timestamp);
             }
         }
@@ -74,7 +73,7 @@ static int ds18b20_read_temp_sample(void)
 
     ds18b20_thread = rt_thread_create("18b20tem",
                                       read_temp_entry,
-                                      "temp_ds18b20",
+                                      "tm-ds18b",
                                       1024,
                                       RT_THREAD_PRIORITY_MAX / 2,
                                       20);
@@ -91,7 +90,7 @@ static int rt_hw_ds18b20_port(void)
 {
     struct rt_sensor_config cfg;
     
-    cfg.intf.user_data = (void *)DS18B20_DATA_PIN;
+    cfg.intf.arg = (void *)DS18B20_DATA_PIN;
     rt_hw_ds18b20_init("ds18b20", &cfg);
     
     return RT_EOK;

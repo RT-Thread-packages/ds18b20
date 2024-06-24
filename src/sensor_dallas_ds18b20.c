@@ -192,7 +192,7 @@ static rt_size_t _ds18b20_polling_get_data(rt_sensor_t sensor, struct rt_sensor_
     return 1;
 }
 
-static rt_size_t ds18b20_fetch_data(struct rt_sensor_device *sensor, void *buf, rt_size_t len)
+static rt_ssize_t ds18b20_fetch_data(rt_sensor_t sensor, rt_sensor_data_t buf, rt_size_t len)
 {
     RT_ASSERT(buf);
 

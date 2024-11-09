@@ -15,10 +15,23 @@
 #include <rthw.h>
 #include <rtthread.h>
 #include <rtdevice.h>
-#include "drivers/sensor.h"
 
 #if RT_VER_NUM < 0x50000
 #include <stdint.h>
+#endif
+
+#if defined(RT_VERSION_CHECK)
+    #if (RTTHREAD_VERSION >= RT_VERSION_CHECK(5, 0, 2))
+        #define RT_SIZE_TYPE rt_ssize_t
+#else
+        #define RT_SIZE_TYPE rt_size_t
+#endif
+
+#if (RTTHREAD_VERSION >= RT_VERSION_CHECK(5, 0, 0))
+    #define WEAK_DEF rt_weak
+#else
+    #define WEAK_DEF RT_WEAK
+#endif
 #endif
 
 #define CONNECT_SUCCESS  0

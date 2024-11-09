@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "*.md": "markdown",
+        "sensor_dallas_ds18b20.h": "c",
+        "dallas_ds18b20_sensor_v1.h": "c"
+    }
+}

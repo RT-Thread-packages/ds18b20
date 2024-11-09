@@ -9,21 +9,21 @@
  * 2020-07-28     WillianChan     add ds18b20 init error message
  */
 
-#include "sensor_dallas_ds18b20.h"
-#include "drivers/sensor.h"
+#include "dallas_ds18b20_sensor_v1.h"
+#include <rtdevice.h>
 #include "board.h"
 #include <rtdbg.h>
 
-#define DBG_TAG "sensor.dallas.ds18b20"
+#define DBG_TAG "dallas.ds18b20.sensor.v1"
 #define DBG_LVL DBG_INFO
 
 #define SENSOR_TEMP_RANGE_MAX (125)
 #define SENSOR_TEMP_RANGE_MIN (-55)
 
 #if RT_VER_NUM < 0x50000
-RT_WEAK void rt_hw_us_delay(rt_uint32_t us)
+WEAK_DEF void rt_hw_us_delay(rt_uint32_t us)
 #else
-rt_weak void rt_hw_us_delay(rt_uint32_t us)
+WEAK_DEF void rt_hw_us_delay(rt_uint32_t us)
 #endif
 {
     rt_uint32_t delta;
@@ -196,7 +196,7 @@ static rt_size_t _ds18b20_polling_get_data(rt_sensor_t sensor, struct rt_sensor_
     return 1;
 }
 
-static rt_size_t ds18b20_fetch_data(struct rt_sensor_device *sensor, void *buf, rt_size_t len)
+static RT_SIZE_TYPE ds18b20_fetch_data(struct rt_sensor_device *sensor, void *buf, rt_size_t len)
 {
     RT_ASSERT(buf);
 

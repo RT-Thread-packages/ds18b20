@@ -11,12 +11,13 @@
 
 #include <stdlib.h>
 #include <rtthread.h>
+#include <rtdevice.h>
 #include "board.h"
-#include "drivers/sensor.h"
-#include "sensor_dallas_ds18b20.h"
+#include "dallas_ds18b20_sensor_v1.h"
 
 /* Modify this pin according to the actual wiring situation */
 #define DS18B20_DATA_PIN    GET_PIN(G, 9)
+
 
 static void read_temp_entry(void *parameter)
 {
